@@ -1,8 +1,11 @@
 import { useRouter } from "next/router";
+import { useRef } from "react";
+import styled from "../../components/details.module.css";
 
 export default function Details() {
   const router = useRouter();
   const { id, text, completed } = router.query; // クエリパラメータからデータを取得
+  const inputRef = useRef(null); // 入力フィールドを参照するためのuseRef
 
   const handleDelete = async () => {
     try {
@@ -23,16 +26,52 @@ export default function Details() {
       console.error("Error deleting Todo:", error);
     }
   };
+  const handleEdit = async (e) => {
+    e.preventDefault(); // フォーム送信のデフォルト動作を防ぐ
+    const updatedText = inputRef.current.value.trim(); // 入力フィールドの値を取得
 
-  return (
-    <div style={{ padding: "20px" }}>
-      <h1>Todo Details</h1>
-      <p><strong>ID:</strong> {id}</p>
-      <p><strong>Text:</strong> {text}</p>
-      <button onClick={() => router.push("/")}>Back to List</button>
-      <button onClick={handleDelete} style={{ marginLeft: "10px", color: "red" }}>
+    if (updatedText) {
+      try {
+        // APIに更新リクエストを送信
+        const response = await fetch("/api/todos", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, text: updatedText }), // IDと新しいテキストを送信
+        });
+
+        if (response.ok) {
+          // リストページに戻る
+          router.push("/");
+        } else {
+          console.error("Failed to update Todo");
+        }
+      } catch (error) {
+        console.error("Error updating Todo:", error);
+      }
+    }
+  };
+  
+
+ return (
+    <div className={styled.container}>
+      <header className={styled.header}>
+        <h1>Todo Details</h1>
+      </header>
+      <div className={styled.details}>
+        <p><strong>ID:</strong> {id}</p>
+        <p><strong>Text:</strong> {text}</p>
+      </div>
+      <button onClick={() => router.push("/")} className={styled.button}>
+        Back to List
+      </button>
+      <button onClick={handleDelete} className={`${styled.button} ${styled.red}`} style={{ marginLeft: "10px" }}>
         Delete Todo
       </button>
+      <h3>Edit Todo</h3>
+      <form onSubmit={handleEdit} className={styled.form}>
+        <input type="text" defaultValue={text} ref={inputRef} className={styled.input} />
+        <button type="submit" className={styled.button}>Save</button>
+      </form>
     </div>
   );
 }
