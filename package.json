@@ -9,8 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "express-session": "^1.18.1",
     "mysql2": "^3.14.1",
     "next": "15.3.5",
+    "next-session": "^4.0.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   }
