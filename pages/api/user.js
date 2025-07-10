@@ -31,6 +31,7 @@ async function handler(req, res) {
           res.status(401).json({ message: "Invalid username or password" });
           return;
         }
+        
 
         const user = rows[0];
         const isPasswordValid = await bcrypt.compare(password, user.password);

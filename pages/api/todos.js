@@ -11,7 +11,7 @@ const db = mysql.createPool({
 
 async function handler(req, res) {
   const userId = req.session.userId; // セッションからユーザーIDを取得
-  console.log("ここです", userId);
+  console.log("ここ", userId);
   if (!userId) {
     res.status(401).json({ message: "Unauthorized" });
     return;

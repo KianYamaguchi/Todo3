@@ -12,7 +12,7 @@ export default function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const userName = inputUserRef.current.value;
+          const userName = inputUserRef.current.value;
         const password = inputPasswordRef.current.value;
         if (userName && password) {
             // ここでAPIにリクエストを送信するなどの処理を行う
@@ -21,10 +21,10 @@ export default function Login() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ action: "login", username: userName, password: password }),
             });
-            if (response.ok) {
-                router.push("/");
+               if (response.ok) {
+                  router.push("/");
             } else {
-                alert("ログインに失敗しました。もう一度お試しください。");
+                 alert("ログインに失敗しました。もう一度お試しください。");
             }
         }
     }

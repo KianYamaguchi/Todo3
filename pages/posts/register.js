@@ -33,6 +33,7 @@ export default function Register() {
     return(<div>
 
         <h2>登録フォーム</h2>
+        
         <form onSubmit={handleSubmit}>
             <div>
                 <label htmlFor="username">ユーザー名:</label>
