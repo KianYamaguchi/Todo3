@@ -1,24 +1,35 @@
-import Head from "next/head";
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-import styles from "@/styles/Home.module.css";
+
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Layout from "../components/Layout";
 import style from "../components/index.module.css";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [todos, setTodos] = useState([]); // Todoリストの状態
   const inputRef = useRef(null); // 入力フィールドを参照するためのuseRef
   const inputDateRef = useRef(null); // 日付入力フィールドを参照するためのuseRef
+  const router = useRouter(); // Next.jsのルーターを使用
   
   // APIからTodoリストを取得
-  useEffect(() => {
-    fetch("/api/todos")
-      .then((res) => res.json())
-      .then((data) => setTodos(data));
-  }, []);
-
+    useEffect(() => {
+      fetch("/api/todos")
+        .then((res) => {
+          if (res.status === 401) {
+            router.push("/posts/login"); // 未ログインならリダイレクト
+            return [];
+          }
+          return res.json();
+        })
+        .then((data) => {
+          if (Array.isArray(data)) {
+            setTodos(data);
+          }
+        })
+        .catch(() => {
+          router.push("/posts/login");
+        });
+    }, [router]);
   // 新しいTodoを追加する関数
   const handleAddTodo = async (e) => {
     e.preventDefault(); // フォーム送信のデフォルト動作を防ぐ
@@ -35,12 +46,29 @@ export default function Home() {
       inputRef.current.value = ""; // フォームをクリア
     }
   };
+   const handleLogout = async () => {
+    const response = await fetch("/api/todos", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "logout" }),
+    });
+    if (response.ok) {
+      alert("ログアウトしました");
+      router.push("/posts/login"); // ログインページにリダイレクト
+    } else {
+      alert("ログアウトに失敗しました");
+    }
+  };
+
 
   return (
     <div className={style.container}>
       <Layout>
         <header className={style.header}>
           <h2>Todo List</h2>
+          <button action="logout" onClick={handleLogout} className={style.logoutButton}>
+            ログアウト
+          </button>
         </header>
         <form onSubmit={handleAddTodo} className={style.form}>
           <input
